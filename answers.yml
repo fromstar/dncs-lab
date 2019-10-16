@@ -1,0 +1,18 @@
+FirstName: Davide
+LastName: Dalla Stella
+MatriculationNumber: 192730
+AcademicYear: 2019-2020
+GitHubUrl: YourGithubRepositoryURL
+Subnets:
+  HostsA:
+    RequiredAddresses: 399
+    SubnetAddress: 172.16.0.0
+    SubnetPrefixLength: 255.255.254.0
+  HostsB:
+    RequiredAddresses: 381
+    SubnetAddress: 172.16.2.0
+    SubnetPrefixLength: 255.255.254.0
+  Hub:
+    RequiredAddresses: 349
+    SubnetAddress: 172.16.4.0
+    SubnetPrefixLength: 255.255.254.0
