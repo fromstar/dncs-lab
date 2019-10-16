@@ -8,7 +8,11 @@ sudo ifconfig enp0s8 up
 sudo ifconfig enp0s9 up
 sudo ifconfig enp0s10 up
 
-sudo ip route delete default
-sudo ip route add default via 192.168.1.1
-
 sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+
+sudo tunctl -t tap0
+
+sudo ifconfig br0 122.122.0.2 netmask 255.255.252.0
+
+sudo ip route delete default
+sudo ip route add default via 122.122.0.1

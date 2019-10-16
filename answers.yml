@@ -2,7 +2,7 @@ FirstName: Davide
 LastName: Dalla Stella
 MatriculationNumber: 192730
 AcademicYear: 2019-2020
-GitHubUrl: YourGithubRepositoryURL
+GitHubUrl: https://github.com/fromstar/dncs-lab
 Subnets:
   HostsA:
     RequiredAddresses: 399
