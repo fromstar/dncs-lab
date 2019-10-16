@@ -117,6 +117,8 @@ The assignment deliverable consists of a Github repository containing:
 
 
 # Design
+Tutti i comandi che ho usato gli ho inseriti in script appositi che ho creato per ogni macchina. Fatta eccezione di qualcuno (come quello usato per l'installazione di OpenVSwitch) questi non sono permanenti, ho dunque modificato il vagrantfile per eseguirli ad ogni avvio delle macchine virtuali. Per lo switch e l'host-c ho creato uno script in più ciascuno che viene eseguito solo al primo avvio e che inserisce i comandi per installare i software necessari alla realizzazione del progetto. 
+
 Per realizzare il progetto, lo script mi ha assegnato 3 numeri di indirizzi necessari per le 3 sottoreti:
 - Host-a: 399 indirizzi
 - Host-b: 381 indirizzi
