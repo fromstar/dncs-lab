@@ -117,64 +117,63 @@ The assignment deliverable consists of a Github repository containing:
 
 
 # Design
-Per realizzare il progetto lo script mi ha assegnato per le 3 sotto-reti:
+Per realizzare il progetto, lo script mi ha assegnato 3 numeri di indirizzi necessari per le 3 sottoreti:
 - Host-a: 399 indirizzi
 - Host-b: 381 indirizzi
 - Hub: 344 indirizzi
 
-Per farle tutte e 3 quindi ho bisogno che la sottomaschera sia una /23 così da avere 2^9=512 indirizzi disponibili per ognuna.
+Le ho create quindi utilizzando una sottomascher /23 così da avere 2^9=512 indirizzi disponibili per ognuna.
 Arbitrariamente ho impostato gli indirizzi di rete in ordine:
-- host-a: 172.16.0.0
-- host-b: 172.16.2.0
-- hub: 172.16.4.0
+- host-a: 172.16.0.0 (indirizzi da 172.16.0.0 a 172.16.1.255)
+- host-b: 172.16.2.0 (indirizzi da 172.16.2.0 a 172.16.3.255)
+- hub: 172.16.4.0 (indirizzi da 172.16.4.0 a 172.16.5.255)
 
 Gli indirizzi assegnabili per le macchine appertenti alla prima rete dunque sono compresi tra 172.16.0.2 e 172.16.1.254(Il primo indirizzo "0.0" serve a identificare la rete, il secondo "0.1" è assegnato al gateway mentre l'ultimo "1.255" corrisponde all'indrizzo di broadcast).
-Per fare ciò, una volta avviate le macchine virtuali, ho controllato il nome delle interfacce da modificare. host-a, host-b e host-c ne hanno solo una di nome enp0s8, quindi l'ho abilitata e le ho assegnato un indirizzo statico per ogni macchina:
+Per fare ciò, una volta avviate le macchine virtuali, ho controllato il nome delle interfacce da modificare. host-a, host-b e host-c ne hanno solo una di nome enp0s8, quindi l'ho abilitata e ho assegnato un indirizzo statico arbitrario per ogni macchina:
 - host-a: 172.16.1.130
 - host-b: 172.16.3.130
-- host-c: 172.16.4.130
+- host-c: 172.16.5.130
 
-Una volta assegnati gli indirizzi agli host l'ho fatto anche per i router e lo switch.
+Una volta assegnati gli indirizzi agli host sono passato ai router e allo switch.
 Per il collegamento router-1/router-2 e quello router-1/swtich ho utilizzato due sottoreti con sottomaschera /30(permette di avere solo 2 indirizzi assegnabili più uno di rete e uno di broadcast):
-- collegamento switch<->router-1: 192.168.0.0
-- collegamento router-1<->router-2: 192.168.0.4
+- collegamento switch<->router-1: 192.168.1.0 (indirizzi da 192.168.1.0 a 192.168.1.3)
+- collegamento router-1<->router-2: 192.168.1.4 (indirizzi da 192.168.1.4 a 192.168.1.7)
 
-Sul router-2 ho assegnato all'interfaccia enp0s8 l'indirizzo di gateway per la rete host-c quindi 172.16.4.1 mentre l'interfaccia enp0s9 l'ho usata per collegarla al router-1 e le ho assegnato l'indirizzo 192.168.0.6
+Sul router-2 ho assegnato all'interfaccia enp0s8 l'indirizzo di gateway per la sottorete dell'host-c quindi 172.16.4.1 mentre l'interfaccia enp0s9 l'ho usata per collegarla al router-1 e le ho assegnato l'indirizzo 192.168.1.6
 
-Dalla parte del router-1 ho sempre assegnato all'interfaccia enp0s9 l'indirizzo 192.168.0.5 così da metterla nella stessa sotto-rete del router-2. L'interfaccia enp0s8 invece l'ho usata per il collegamento con lo switch e ho assegnato l'indirizzo 192.168.0.1.
+Dalla parte del router-1 ho utilizzato per l'interfaccia enp0s9 l'indirizzo 192.168.0.5 così da metterla nella stessa sotto-rete del router-2. L'interfaccia enp0s8 invece l'ho usata per il collegamento con lo switch e ho assegnato l'indirizzo 192.168.1.1.
 
-Con lo switch ho fatto le stesse operazioni per i router solo che c'è un'interfacci in più. enp0s8 l'ho usata per il collegamente al router-1 e le ho dato l'indirizzo 192.168.0.2. enp0s9 ha l'indirizzo di gateway per la rete dell'host-a quindi 172.16.0.1 mentre enp0s10 ha l'indirizzo di gateway per la rete dell'host-b, ovvero 172.16.2.1.
+Nello switch l'interfaccia enp0s8 l'ho usata per il collegamente al router-1 e le ho dato l'indirizzo 192.168.1.2. enp0s9 ha l'indirizzo di gateway per la sottorete dell'host-a quindi 172.16.0.1 mentre enp0s10 ha l'indirizzo di gateway per la sottorete dell'host-b, ovvero 172.16.2.1.
 
-Nell'host-c ho installato ho installato docker e ho fatto un pull dell'immagine "nginx" per avviare un webserver in seguito.
+Nell'host-c ho installato ho installato docker e ho fatto un pull dell'immagine "nginx" per creare in seguito un webserver.
 
-Dopo aver assegnato tutti gli indirizzi ho dovuto modificare le tabelle di route.
-Per i vari host ho eliminato tutte le route le di default e le ho sostitue con delle nuove specificando che passassero per l'indirizzo di gateway della loro sotto-rete.
-Per lo switch e il router-2 ho fatto la stessa identica cosa ma mettendo le route di default via router-1.
+Dopo aver assegnato tutti gli indirizzi ho dovuto modificare le tabelle di route per permettere la comunicazione tra le varie macchine messe in sottoreti diversi.
 
-Nel router-1 invece ho lasciato la route di default perchè in questa simulazione vorrei che il traffico diretto per reti esterni sia reso disponibile solo da lui e dunque ho aggiunto 3 route specifiche per le 3 sotto-reti.
-Infine ho abilitato l'ipv4 forwardig per permettere l'inoltro dei pacchetti nei due router e nello switch.
-Per testare che tutto funzionasse correttamente ho usato il comando ping.
+Per fare la vlan tra la sottorete dell'host-a e quella dell'host-b ho creato un bridge nello switch di nome br0.
+A questo ho aggiunto le sue 3 interfacce più una virtuale. Considerando che in questa rete virtuale devo mettere insieme tutte le macchine delle due sottoreti ho bisogno di 299+381=780 indirizzi. Usare una sottorete con maschera /23 non mi permetterebbe di avere abbastanza indirizzi assegnabili, ho usato quindi il range 122.122.0.0/22 con l'indirizzo di rete scelto arbitrariamente.
+La sottomaschera /22 mi permette di avere 2^10=1024(Quindi il range va da 122.122.0.0 a 122.122.3.255).
+Successivamente ho creato un'interfaccia virtuale nell'host-a,host-b e router-1 e ho assegnato i seguenti indirizzi:
 
-Come ultima cosa ho avviato il container e dall'host-a ho testato il funzionamento tramite il comando curl. Il test è andato a buon fine e mi è apparsa la pagina di benvenuto di default di nginx.
+-host-a: enp0s8:0: 122.122.0.130
+-host-b: enp0s8:0: 122.122.1.130
+-router-1: enp0s8:0: 122.122.0.1
 
+Ho inserito nella vlan anche il router-1 per evitare che il traffico sia completamente isolato e permettere all host-a e host-b di raggiungere l'host-c.
 
+Finito questa parte di lavoro ho cambiato le route delle varie macchine.
+Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. Questa scelta l'ho fatta pensando di permettere il traffico diretto a reti esterne solo attraverso il router-1 per tutte le macchine.
+Le nuove route di default quindi le ho fatte passare per il gateway della loro sottorete fatta eccezione per quelle appartanenti alla vlan dove ho messo direttamente quello della sottorete virtuale e non fisica.
+Le route di default dunque sono così impostate:
 
- VLAN host-a host-b
+-host-a: via 122.122.0.1
+-host-b: via 122.122.0.1
+-switch: via 122.122.0.1
+-router-2: via 192.168.1.5
+-host-c: via 172.16.4.1
 
- Creo delle interfacce virtuali negli host da attaccare alle macchine.
- per le due reti sono 399+381=780. Mi servono 10bit. 2^10=1024indirizzi. /22
- 122.122.0.0/22 ->rete
- 122.122.3.255 ->broadcast
- 122.122.0.130 ->host-a (sudo ifconfig enp0s8:0 122.122.0.130)
- 122.122.1.130 ->host-b
+Nel router-1 visto che è adiacente al router-2 e che appartiene alla vlan mi è bastato solo aggiungere una route specifica per la sottorete dell'host-c.
+Le operazione fatte fino a questo punto non bastano però per permettere l'inoltro dei pacchetti, ho dovuto infatti abilitare anche l'ipv4 forwarding nello switch, nel router-1 e nel router-2 per far sì che tutto sia funzionante.
+Per assicurarmi che tutto sia apposto ho usato il comando "ping" per testare le varie connessioni.
 
- 11111111.11111111.11111100.00000000
-
-Creo un bridge nello switch
-Aggiungo al bridge le schede di rete che mi servono
-
-Creo una scheda di rete virtuale
-Per crearala installo il package "uml-utilities"
-
-Aggiungo questa scheda al bridge col tag
-Assegno un indirizzo ip al bridge
+Infine nell'host-c ho avviato il container con l'immagine di nginx per avviare il web-server.
+Ho testato che il web-server sia online e raggiungibile dall'host-a tramite il comando "curl". Il test è andato a buon fine e  nell'host-a mi è apparso l'html dell'index di default del web-server.
