@@ -154,9 +154,9 @@ A questo ho aggiunto le sue 3 interfacce più una virtuale. Considerando che in 
 La sottomaschera /22 mi permette di avere 2^10=1024(Quindi il range va da 122.122.0.0 a 122.122.3.255).
 Successivamente ho creato un'interfaccia virtuale nell'host-a,host-b e router-1 e ho assegnato i seguenti indirizzi:
 
--host-a: enp0s8:0: 122.122.0.130
--host-b: enp0s8:0: 122.122.1.130
--router-1: enp0s8:0: 122.122.0.1
+- host-a: enp0s8:0: 122.122.0.130
+- host-b: enp0s8:0: 122.122.1.130
+- router-1: enp0s8:0: 122.122.0.1
 
 Ho inserito nella vlan anche il router-1 per evitare che il traffico sia completamente isolato e permettere all host-a e host-b di raggiungere l'host-c.
 
@@ -165,11 +165,11 @@ Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. Q
 Le nuove route di default quindi le ho fatte passare per il gateway della loro sottorete fatta eccezione per quelle appartanenti alla vlan dove ho messo direttamente quello della sottorete virtuale e non fisica.
 Le route di default dunque sono così impostate:
 
--host-a: via 122.122.0.1
--host-b: via 122.122.0.1
--switch: via 122.122.0.1
--router-2: via 192.168.1.5
--host-c: via 172.16.4.1
+- host-a: via 122.122.0.1
+- host-b: via 122.122.0.1
+- switch: via 122.122.0.1
+- router-2: via 192.168.1.5
+- host-c: via 172.16.4.1
 
 Nel router-1 visto che è adiacente al router-2 e che appartiene alla vlan mi è bastato solo aggiungere una route specifica per la sottorete dell'host-c.
 Le operazione fatte fino a questo punto non bastano però per permettere l'inoltro dei pacchetti, ho dovuto infatti abilitare anche l'ipv4 forwarding nello switch, nel router-1 e nel router-2 per far sì che tutto sia funzionante.
