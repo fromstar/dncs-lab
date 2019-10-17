@@ -117,31 +117,32 @@ The assignment deliverable consists of a Github repository containing:
 
 
 # Design
-Tutti i comandi che ho usato gli ho inseriti in script appositi che ho creato per ogni macchina. Fatta eccezione di qualcuno (come quello usato per l'installazione di OpenVSwitch) questi non sono permanenti, ho dunque modificato il vagrantfile per eseguirli ad ogni avvio delle macchine virtuali. Per lo switch e l'host-c ho creato uno script in più ciascuno che viene eseguito solo al primo avvio e che inserisce i comandi per installare i software necessari alla realizzazione del progetto. 
+All the commands I used, I insert them in script that I created for every machine. Except for someone of them (like these used for the installation of OpenVSwitch) these are not permanent, so I've modified the vagrantfile to execute them at every start of the virtual machines. For the switch and the host-c I created one more script for each one, that will be execute only at the first start and will insert the commands to install the software needed for the realization of the project.
 
-Per realizzare il progetto, lo script mi ha assegnato 3 numeri di indirizzi necessari per le 3 sottoreti:
-- Host-a: 399 indirizzi
-- Host-b: 381 indirizzi
-- Hub: 344 indirizzi
+To realize the project, the dncs-init script assigned me 3 address number, necessary for my 3 subnet:
+- Host-a: 399 addresses
+- Host-b: 381 addresses
+- Hub: 344 adresses
 
-Ho quindi creato le tre sottoreti utilizzando una sottomaschera /23 così da avere 2^9=512 indirizzi disponibili per ognuna.
-Arbitrariamente ho impostato gli indirizzi di rete in ordine:
-- host-a: 172.16.0.0 (indirizzi da 172.16.0.0 a 172.16.1.255)
-- host-b: 172.16.2.0 (indirizzi da 172.16.2.0 a 172.16.3.255)
-- hub: 172.16.4.0 (indirizzi da 172.16.4.0 a 172.16.5.255)
 
-Gli indirizzi assegnabili per le macchine appertenti alla prima rete dunque sono compresi tra 172.16.0.2 e 172.16.1.254(Il primo indirizzo "0.0" serve a identificare la rete, il secondo "0.1" è assegnato al gateway mentre l'ultimo "1.255" corrisponde all'indrizzo di broadcast).
-Per fare ciò, ho assegnato all'interfaccia enp0s8 di ogni macchina un suo indirizzo statico scelto arbitrariamente e le ho abilitate tutte e 3:
+So I created the three subnet using a /23 subnet mask so as to have 2^9=512 available adresses for each one.
+Arbitrarily I set the network addresses in order:
+- host-a: 172.16.0.0 (addresses from 172.16.0.0 to 172.16.1.255)
+- host-b: 172.16.2.0 (addresses from 172.16.2.0 to 172.16.3.255)
+- hub: 172.16.4.0 (addresses from 172.16.4.0 to 172.16.5.255)
+
+The assignable addresses for the machines belonging to the first subnet are therefore included from 172.16.0.2 to 172.16.1.254(The first address "0.0" needs to identify the subnet, the second "0.1" is assignet to the gateway while the last one "1.255" is for the broadcast).
+To do this, I assigned a static address to the enp0s8 interface of each machine choosen arbitrarily and I enabled them:
 - host-a: 172.16.1.130
 - host-b: 172.16.3.130
 - host-c: 172.16.5.130
 
-Una volta assegnati gli indirizzi agli host sono passato ai router e allo switch.
-Per il collegamento router-1/router-2 e quello router-1/swtich ho utilizzato due sottoreti con sottomaschera /30(permette di avere solo 2 indirizzi assegnabili più uno di rete e uno di broadcast):
-- collegamento switch<->router-1: 192.168.1.0 (indirizzi da 192.168.1.0 a 192.168.1.3)
-- collegamento router-1<->router-2: 192.168.1.4 (indirizzi da 192.168.1.4 a 192.168.1.7)
+Once the addresses are assigned to the hosts I switched to routers and switch.
+For the router-1/router and router-1/swtich connections I used two subnet with /30 subnet mask(it allows to have only two 2 assignable addesses plus one network address and one broadcast address):
+- link switch<->router-1: 192.168.1.0 (addresses from 192.168.1.0 to 192.168.1.3)
+- link router-1<->router-2: 192.168.1.4 (addresses from 192.168.1.4 to 192.168.1.7)
 
-Sul router-2 ho assegnato all'interfaccia enp0s8 l'indirizzo di gateway per la sottorete dell'host-c quindi 172.16.4.1 mentre l'interfaccia enp0s9 l'ho usata per collegarla al router-1 e le ho assegnato l'indirizzo 192.168.1.6
+On router-2 I assigned to the enp0s8 interface the host-c subnet's gateway address so 172.16.4.1 while for I used the enp0s9 interface to connect it to the router-1 and I assigned them the addess 192.168.1.6
 
 Dalla parte del router-1 ho utilizzato per l'interfaccia enp0s9 l'indirizzo 192.168.0.5 così da metterla nella stessa sotto-rete del router-2. L'interfaccia enp0s8 invece l'ho usata per il collegamento con lo switch e ho assegnato l'indirizzo 192.168.1.1.
 
@@ -153,7 +154,6 @@ Per fare la vlan tra la sottorete dell'host-a e quella dell'host-b ho creato un 
 A questo ho aggiunto come porte le sue 3 interfacce più una virtuale. Considerando che in questa rete virtuale devo mettere insieme tutte le macchine delle due sottoreti ho bisogno di 299+381=780 indirizzi. Usare una sottorete con maschera /23 non mi permetterebbe di avere abbastanza indirizzi assegnabili, ho usato quindi il range 122.122.0.0/22 con l'indirizzo di rete scelto arbitrariamente.
 La sottomaschera /22 mi permette di avere 2^10=1024 possibili indirizzi(Quindi il range va da 122.122.0.0 a 122.122.3.255).
 Successivamente ho creato un'interfaccia virtuale nell'host-a,host-b e router-1 e ho assegnato i seguenti indirizzi:
-
 - host-a: enp0s8:0: 122.122.0.130
 - host-b: enp0s8:0: 122.122.1.130
 - router-1: enp0s8:0: 122.122.0.1
@@ -164,7 +164,6 @@ Finito questa parte di lavoro ho cambiato le tabelle di route delle varie macchi
 Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. Questa scelta l'ho fatta pensando di permettere il traffico diretto a reti esterne solo attraverso il router-1.
 Le nuove route di default delle macchine quindi le ho fatte passare attraverso il gateway della loro sottorete fatta eccezione per quelle appartanenti alla vlan dove ho messo quello della sottorete virtuale e non fisica.
 Le route di default dunque sono così impostate:
-
 - host-a: via 122.122.0.1
 - host-b: via 122.122.0.1
 - switch: via 122.122.0.1
