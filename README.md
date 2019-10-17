@@ -162,9 +162,9 @@ Then I created a virtual interface on the host-a, host-b and router-1 and assign
 I have also inserted the router-1 in the vlan to avoid that the traffic is totally isolated and allow the host-a and host-b to reach the host-c.
 
 After this part of work I changed the route tables of the various machines.
-Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. I made this choice thinking of allowing traffic to external networks only through the router-1.
+I deleted all the default routes and left only the router-1 route. I made this choice thinking of allowing traffic to external networks only through the router-1.
 So I let go the new machine's default route through their subnet's gateway except for those belonging to the vlan where I put the one of the virtual and not physical subnet.
-Le default route aro so set in this way:
+Le default route are so set in this way:
 - host-a: via 122.122.0.1
 - host-b: via 122.122.0.1
 - switch: via 122.122.0.1
