@@ -131,7 +131,7 @@ Arbitrarily I set the network addresses in order:
 - host-b: 172.16.2.0 (addresses from 172.16.2.0 to 172.16.3.255)
 - hub: 172.16.4.0 (addresses from 172.16.4.0 to 172.16.5.255)
 
-The assignable addresses for the machines belonging to the first subnet are therefore included from 172.16.0.2 to 172.16.1.254(The first address "0.0" needs to identify the subnet, the second "0.1" is assignet to the gateway while the last one "1.255" is for the broadcast).
+The assignable addresses for the machines belonging to the first subnet are therefore included from 172.16.0.2 to 172.16.1.254(The first address "0.0" needs to identify the subnet, the second "0.1" is assigned to the gateway while the last one "1.255" is for the broadcast).
 To do this, I assigned a static address to the enp0s8 interface of each machine choosen arbitrarily and I enabled them:
 - host-a: 172.16.1.130
 - host-b: 172.16.3.130
@@ -142,37 +142,42 @@ For the router-1/router and router-1/swtich connections I used two subnet with /
 - link switch<->router-1: 192.168.1.0 (addresses from 192.168.1.0 to 192.168.1.3)
 - link router-1<->router-2: 192.168.1.4 (addresses from 192.168.1.4 to 192.168.1.7)
 
-On router-2 I assigned to the enp0s8 interface the host-c subnet's gateway address so 172.16.4.1 while for I used the enp0s9 interface to connect it to the router-1 and I assigned them the addess 192.168.1.6
+On router-2 I assigned to the enp0s8 interface the host-c subnet's gateway address so 172.16.4.1 while I used the enp0s9 interface to connect it to the router-1 and I assigned them the address 192.168.1.6
 
-Dalla parte del router-1 ho utilizzato per l'interfaccia enp0s9 l'indirizzo 192.168.0.5 così da metterla nella stessa sotto-rete del router-2. L'interfaccia enp0s8 invece l'ho usata per il collegamento con lo switch e ho assegnato l'indirizzo 192.168.1.1.
+For the part of router-1 I used for the interface enp0s9 the address 192.168.0.5 to put them in the same subnet of router-2.
+Instead, I used the interface enp0s8 for the link with the switch, and I've assigned the address 192.168.1.1.
 
-Nello switch l'interfaccia enp0s8 l'ho usata per il collegamente al router-1 e le ho dato l'indirizzo 192.168.1.2. enp0s9 ha l'indirizzo di gateway per la sottorete dell'host-a quindi 172.16.0.1 mentre enp0s10 ha l'indirizzo di gateway per la sottorete dell'host-b, ovvero 172.16.2.1.
+In the switch, I used the interface enp0s8 for the link with router-1 and I gave them the address 192.168.1.2.
+enp0s9 has the host-a subnet's gateway address, so 172.16.0.1, while enp0s10 has the same gateway's address for the subnet of the host-b, 172.16.2.1.
 
-Nell'host-c ho installato ho installato docker e ho fatto un pull dell'immagine "nginx" per creare in seguito un webserver.
+In the host-c I installed docker and I made a pull of the "nginx" image to create later a webserver.
 
-Per fare la vlan tra la sottorete dell'host-a e quella dell'host-b ho creato un bridge nello switch di nome br0.
-A questo ho aggiunto come porte le sue 3 interfacce più una virtuale. Considerando che in questa rete virtuale devo mettere insieme tutte le macchine delle due sottoreti ho bisogno di 299+381=780 indirizzi. Usare una sottorete con maschera /23 non mi permetterebbe di avere abbastanza indirizzi assegnabili, ho usato quindi il range 122.122.0.0/22 con l'indirizzo di rete scelto arbitrariamente.
-La sottomaschera /22 mi permette di avere 2^10=1024 possibili indirizzi(Quindi il range va da 122.122.0.0 a 122.122.3.255).
-Successivamente ho creato un'interfaccia virtuale nell'host-a,host-b e router-1 e ho assegnato i seguenti indirizzi:
+To do the vlan between the host-a's subnet and host-b's subnet I made a bridge on the switch named "br0".
+At this point I added as port it's interfaces plus one virtual.
+Considering that in this virtual network I have to put together all the machines of the two subnets, I need almost 299+381=780 addresses. Using a subnet with mask / 23 would not allow me to have enough assignable addresses, so I used the range 122.122.0.0/22 with the address chosen arbitrarily.
+The subnet mask /22 allows me to have 2^10=1024 possible address(So the range goes from 122.122.0.0 to 122.122.3.255).
+
+Then I created a virtual interface on the host-a, host-b and router-1 and assigned the following addresses:
 - host-a: enp0s8:0: 122.122.0.130
 - host-b: enp0s8:0: 122.122.1.130
 - router-1: enp0s8:0: 122.122.0.1
 
-Ho inserito nella vlan anche il router-1 per evitare che il traffico sia totalmente isolato e permettere all host-a e host-b di raggiungere l'host-c.
+I have also inserted the router-1 in the vlan to avoid that the traffic is totally isolated and allow the host-a and host-b to reach the host-c.
 
-Finito questa parte di lavoro ho cambiato le tabelle di route delle varie macchine.
-Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. Questa scelta l'ho fatta pensando di permettere il traffico diretto a reti esterne solo attraverso il router-1.
-Le nuove route di default delle macchine quindi le ho fatte passare attraverso il gateway della loro sottorete fatta eccezione per quelle appartanenti alla vlan dove ho messo quello della sottorete virtuale e non fisica.
-Le route di default dunque sono così impostate:
+After this part of work I changed the route tables of the various machines.
+Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. I made this choice thinking of allowing traffic to external networks only through the router-1.
+So I let go the new machine's default route through their subnet's gateway except for those belonging to the vlan where I put the one of the virtual and not physical subnet.
+
+Le default route aro so set in this way:
 - host-a: via 122.122.0.1
 - host-b: via 122.122.0.1
 - switch: via 122.122.0.1
 - router-2: via 192.168.1.5
 - host-c: via 172.16.4.1
 
-Nel router-1, visto che è adiacente al router-2 e che appartiene alla vlan, mi è bastato solo aggiungere una route specifica per la sottorete dell'host-c e quindi attraverso il router-2 all'indirizzo 192.168.1.6.
-Le operazione fatte fino a questo punto non bastano però per permettere l'inoltro dei pacchetti, ho dovuto infatti abilitare anche l'ipv4 forwarding nello switch, nel router-1 e nel router-2 per far sì che tutto sia funzionante.
-Per assicurarmi che tutto sia apposto ho usato il comando "ping" per testare le varie connessioni.
+In router-1, since it is adjacent to router-2 and that belongs to the vlan, it was enough for me to just add a specific route for the host-c subnet via router-2 to address 192.168.1.6.
+However the operations made until here are not enough to allow packet forwarding, in fact I had to enable also the ipv4 forwarding in the switch, in the router-1 and in the router-2 to make everything work.
+To be sure that everything is ok I used the command "ping" to test the various connection.
 
-Infine nell'host-c ho avviato il container con l'immagine di nginx per avviare il web-server.
-Ho testato che il web-server sia online e raggiungibile dall'host-a tramite il comando "curl". Il test è andato a buon fine e  nell'host-a mi è apparso l'html dell'index di default di nginx.
+Finally in the host-c I started the container with the image of nginx to start the web-server.
+I tested that the web-server is online and reachable from the host-a via the "curl" command. The test was successful and the html of the default nginx index appeared in the host-a.
