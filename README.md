@@ -124,7 +124,6 @@ To realize the project, the dncs-init script assigned me 3 address number, neces
 - Host-b: 381 addresses
 - Hub: 344 adresses
 
-
 So I created the three subnet using a /23 subnet mask so as to have 2^9=512 available adresses for each one.
 Arbitrarily I set the network addresses in order:
 - host-a: 172.16.0.0 (addresses from 172.16.0.0 to 172.16.1.255)
@@ -143,10 +142,8 @@ For the router-1/router and router-1/swtich connections I used two subnet with /
 - link router-1<->router-2: 192.168.1.4 (addresses from 192.168.1.4 to 192.168.1.7)
 
 On router-2 I assigned to the enp0s8 interface the host-c subnet's gateway address so 172.16.4.1 while I used the enp0s9 interface to connect it to the router-1 and I assigned them the address 192.168.1.6
-
 For the part of router-1 I used for the interface enp0s9 the address 192.168.0.5 to put them in the same subnet of router-2.
 Instead, I used the interface enp0s8 for the link with the switch, and I've assigned the address 192.168.1.1.
-
 In the switch, I used the interface enp0s8 for the link with router-1 and I gave them the address 192.168.1.2.
 enp0s9 has the host-a subnet's gateway address, so 172.16.0.1, while enp0s10 has the same gateway's address for the subnet of the host-b, 172.16.2.1.
 
@@ -167,7 +164,6 @@ I have also inserted the router-1 in the vlan to avoid that the traffic is total
 After this part of work I changed the route tables of the various machines.
 Ho eliminato tutte le route di default e ho lasciato solo quella del router-1. I made this choice thinking of allowing traffic to external networks only through the router-1.
 So I let go the new machine's default route through their subnet's gateway except for those belonging to the vlan where I put the one of the virtual and not physical subnet.
-
 Le default route aro so set in this way:
 - host-a: via 122.122.0.1
 - host-b: via 122.122.0.1
