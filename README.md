@@ -150,11 +150,7 @@ enp0s9 has the host-a subnet's gateway address, so 172.16.0.1, while enp0s10 has
 In the host-c I installed docker and I made a pull of the "nginx" image to create later a webserver.
 
 To do the vlan between the host-a's subnet and host-b's subnet I made a bridge on the switch named "br0".
-At this point I added as port it's interfaces plus one virtual.
-Considering that in this virtual network I have to put together all the machines of the two subnets, I need almost 299+381=780 addresses. Using a subnet with mask / 23 would not allow me to have enough assignable addresses, so I used the range 122.122.0.0/22 with the address chosen arbitrarily.
-The subnet mask /22 allows me to have 2^10=1024 possible address(So the range goes from 122.122.0.0 to 122.122.3.255).
-
-Then I created a virtual interface on the host-a, host-b and router-1 and assigned the following addresses:
+At this point I added as port it's interfaces plus one virtual and then I created a virtual interface on the host-a, host-b and router-1 and assigned the following addresses:
 - host-a: enp0s8:0: 122.122.0.130
 - host-b: enp0s8:0: 122.122.1.130
 - router-1: enp0s8:0: 122.122.0.1
