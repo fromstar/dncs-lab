@@ -12,7 +12,5 @@ sudo echo 1 > /proc/sys/net/ipv4/ip_forward
 
 sudo tunctl -t tap0
 
-sudo ifconfig br0 122.122.0.2 netmask 255.255.252.0
-
 sudo ip route delete default
 sudo ip route add default via 122.122.0.1
