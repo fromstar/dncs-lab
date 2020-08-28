@@ -119,12 +119,12 @@ The assignment deliverable consists of a Github repository containing:
 # Design
 All the commands I used, I insert them in script that I created for every machine. Except for someone of them (like these used for the installation of OpenVSwitch) these are not permanent, so I've modified the vagrantfile to execute them at every start of the virtual machines. For the switch and the host-c I created one more script for each one, that will be execute only at the first start and will insert the commands to install the software needed for the realization of the project.
 
-To realize the project, the dncs-init script assigned me 3 address number, necessary for my 3 subnet:
+To realize the project, the dncs-init script assigned me the dimesions for my 3 subnet:
 - Host-a: 399 addresses
 - Host-b: 381 addresses
 - Hub: 344 adresses
 
-So I created the three subnet using a /23 subnet mask so as to have 2^9=512 available adresses for each one.
+So I created the three subnet using a /23 subnet mask so that I have 2^9=512 available adresses for each one.
 Arbitrarily I set the network addresses in order:
 - host-a: 172.16.0.0 (addresses from 172.16.0.0 to 172.16.1.255)
 - host-b: 172.16.2.0 (addresses from 172.16.2.0 to 172.16.3.255)
@@ -142,12 +142,12 @@ For the router-1/router-2 connection I used a subnet with /30 subnet mask(it all
 
 On router-2 I assigned to the enp0s8 interface the host-c subnet's gateway address so 172.16.4.1 while I used the enp0s9 interface to connect it to the router-1 and I assigned them the address 192.168.1.2
 For the part of router-1 I used for the interface enp0s9 the address 192.168.1.2 to put them in the same subnet of router-2.
-Instead I assigned the enp0s8 interface two vlan tags to allow only hosts compatible with them to allow them to leave the network.
+Instead I assigned to the enp0s8 interface two vlan tags to allow only hosts compatible with them to allow to traffic out of their the vlan.
 For the first vlan I set the tag=10, with the network address 172.16.0.0/23, the second instead has the tag=20 and the network address is 172.16.2.0/23
 
-In the host-c I installed docker and I made a pull of the "nginx" image to create later a webserver.
+In the host-c I installed docker and I pulled the "nginx" image to create later a webserver.
 
-To do the vlan between the host-a's subnet and host-b's subnet I made a bridge on the switch named "switch".
+To do the vlan between the host-a's subnet and host-b's subnets I made a bridge on the switch named "switch".
 At this point I set up the three interfaces: "enp0s8, enp0s9, enp0s10" and the new interface ovs-system. In the end I added three ports to the switch (enp0s8 with tag=10 and enp0s9 with tag=20,enp0s10 without tag) and set the bridge up.
 
 After this part of work I changed the route tables of the various machines.
